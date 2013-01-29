@@ -24,6 +24,9 @@ col.pup <- 1:6
 row.adult <- 8:15
 col.adult <- 7:15
 
+# Movement probability
+move.prob <- matrix(c(rep(0, 6), rep(0.1, 9)), ncol=1)
+
 # Fill matrix for pupae
 for(i in 1:6){
 pop.mat[row.pup[i], col.pup[i]] <- pup.surv
@@ -50,8 +53,9 @@ hab.grid <- matrix(0, ncol=size, nrow=size)
 ########### Add habitat data ###############
 
 ##########################################################################################################################
-#################################### Create list of grid cells ###########################################################
+############################### Prepare intial list of gid cells and empty matrices#######################################
 
+## List to hold population sizes through each iteration #####
 cell.popn <- list()
 
 for(i in 1:nrow(hab.grid)){
@@ -61,8 +65,11 @@ for(i in 1:nrow(hab.grid)){
 	}
 }
 
+#### Matrix to store population sizes for each grid cell through the run ######
 popn.whole <- matrix(0,nrow = size^2, ncol=days+1) 
 
+
+##### Calculate initial population size for each grid cell and store in the first column of popn.whole #####
 initial.pop <- list()
 
 for(i in 1:size){
@@ -73,15 +80,33 @@ initial.pop <- unlist(initial.pop)
 
 popn.whole[,1] <- initial.pop
 
+##### Create map of initial population size #######
+
 initial.pop <- matrix(initial.pop, nrow= size, ncol=size, byrow=T)
 
-current.pop <- list()
+#### Declare variables for inside model#######
 
-pop.grid <- list()
+current.pop <- list() ### Population calculated during each run
 
-pop.grid[[1]] <- initial.pop
+pop.grid <- list() ### List storing maps of the population during each run
 
-current.grid <- matrix(NA, nrow=size, ncol=size)
+pop.grid[[1]] <- initial.pop ### First map in pop.grid set to be the initial population size
+
+current.grid <- matrix(NA, nrow=size, ncol=size) ### matrix tro store the current population map during each run
+
+##### List to store movements of flies during each run #####
+move <- list()
+
+for(i in 1:nrow(hab.grid)){
+	move[[i]] <- list()
+	for(j in 1:ncol(hab.grid)){
+		move[[i]][[j]] <- 0
+	}
+}
+
+move.grid.list <- list() ### List to store maps of movement during each run
+
+move.grid.list[[1]] <- matrix(0, nrow=nrow(hab.grid), ncol=ncol(hab.grid)) ### First movements (i.e. 0) stored
 
 ##########################################################################################################################
 ######################################## Matrix multiplication ###########################################################
@@ -90,14 +115,18 @@ for(y in 1:days){
 	for(i in 1:nrow(hab.grid)){
 		for(j in 1:ncol(hab.grid)){
 			cell.popn[[i]][[j]] <-  pop.mat %*% matrix(cell.popn[[i]][[j]], ncol=1)
-			#hab.grid[i,j] <- sum(cell.popn[[i]][[j]])
-			current.grid[i,j] <- sum(cell.popn[[i]][[j]])
 		}
-	
 	}
-
-	current.pop[[i]] <- sapply(cell.popn[[i]], sum) 
-	popn.whole[, y +1] <- unlist(current.pop)
-	#pop.grid[[y+1]] <- matrix(unlist(current.pop), nrow=size, ncol=size, byrow=T)
+	move.fun <- HAT_move(cell.popn, move, move.prob, hab.grid)
+	move.grid.list[,y+1] <- move.fun$move.grid
+	for(i in 1:nrow){
+		for(i in 1:ncol){
+		cell.popn[[i]][[j]] <- cell.popn[[i]][[j]] + move.fun$new.pop[[i]][[j]] + move.fun$movements
+		current.grid[i,j] <- sum(cell.popn[[i]][[j]])
+		}
+		current.pop[[i]] <- sapply(cell.popn[[i]], sum)
+	}
+	popn.whole[,y +1] <- unlist(current.pop)
 	pop.grid[[y+1]] <- current.grid
 }
+
