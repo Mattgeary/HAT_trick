@@ -3,11 +3,12 @@ pup.death <- 0.05
 pup.surv <- 0.95
 
 # Adult survival
-a.death <- 0.05 
-ad.surv <- 0.95
+adult.death <- 0.05 
+adult.surv <- 0.95
 
 # Fecundity
 fec <- 0.5
+breeding <- c(11:15)
 
 # Initial size and pop matrix
 N0 <- matrix(0, nrow=15, ncol=1)
@@ -21,19 +22,21 @@ row.adult <- 8:15
 col.adult <- 7:15
 
 # Fill matrix for pupae
-for(i in 1:6){
+for(i in 1:length(row.pup)){
 pop.mat[row.pup[i], col.pup[i]] <- pup.surv
 }
 
 # Fill matrix for adults
-for(i in 1:8){
+for(i in 1:length(row.adult)){
 pop.mat[row.adult[i], col.adult[i]] <- adult.surv
 }
 
 # Fill fecundity
-for(i in 11:15){
+for(i in min(breeding):max(breeding)){
 pop.mat[1,i] <- fec
 }
+
+N <- matrix(0, nrow=15, ncol=100)
 
 # 100 year simulation
 N[,1] <- N0
