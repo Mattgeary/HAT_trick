@@ -5,56 +5,56 @@ HAT_move <- function(popn, move, move.prob, hab.grid){
 			if((i-1) <= 0 | (j-1) <=0 | i >= nrow(hab.grid) | j >= ncol(hab.grid)){
 				print("yes")
 				if(i-1 <= 0 & j-1 <= 0){
-					move[[i]][[j]]	<- move[[i]][[j]] + ((popn[[(i+1)]][[j]]* move.prob) + (popn[[(i)]][[j+1]]* move.prob))
+					move[[i]][[j]]	<- move[[i]][[j]] + ((popn[[(i+1)]][[j]]* move.prob) + (popn.orig[[(i)]][[j+1]]* move.prob))
 					move[[(i+1)]][[j]] <- move.c <- move[[(i+1)]][[j]] + (popn.orig[[i]][[j]] * move.prob)
 					move[[i]][[(j+1)]] <- move.d <- move[[i]][[(j+1)]] + (popn.orig[[i]][[j]] * move.prob)
 					popn[[i]][[j]] <- popn[[i]][[j]] - (move.c + move.d)
 					print("i<=0 & j<=0")
 				}
 				if(i-1 <= 0 & j >= ncol(hab.grid)){
-					move[[i]][[j]]	<- move[[i]][[j]] + ((popn[[(i+1)]][[j]]* move.prob) + (popn[[(i)]][[j-1]]* move.prob))
+					move[[i]][[j]]	<- move[[i]][[j]] + ((popn.orig[[(i+1)]][[j]]* move.prob) + (popn.orig[[(i)]][[j-1]]* move.prob))
 					move[[(i+1)]][[j]] <- move.c <- move[[(i+1)]][[j]] + (popn.orig[[i]][[j]] * move.prob)
 					move[[i]][[(j-1)]] <- move.d <- move[[i]][[(j-1)]] + (popn.orig[[i]][[j]] * move.prob)
 					popn[[i]][[j]] <- popn[[i]][[j]] - (move.c + move.d)
 					print("i<=0 & j>=10")
 				}
 				if(i >= nrow(hab.grid) & (j-1) <= 0){
-					move[[i]][[j]]	<- move[[i]][[j]] + ((popn[[(i-1)]][[j]]* move.prob) + (popn[[(i)]][[j+1]]* move.prob))
+					move[[i]][[j]]	<- move[[i]][[j]] + ((popn.orig[[(i-1)]][[j]]* move.prob) + (popn.orig[[(i)]][[j+1]]* move.prob))
 					move[[(i-1)]][[j]] <- move.c <- move[[(i-1)]][[j]] + (popn.orig[[i]][[j]] * move.prob)
 					move[[i]][[(j+1)]] <- move.d <- move[[i]][[(j+1)]] + (popn.orig[[i]][[j]] * move.prob)
 					popn[[i]][[j]] <- popn[[i]][[j]] - (move.c + move.d)
 					print("i>=10 & j<=0")
 				}
 				if(i >= nrow(hab.grid) & j >= ncol(hab.grid)){
-					move[[i]][[j]]	<- move[[i]][[j]] + ((popn[[(i-1)]][[j]]* move.prob) + (popn[[(i)]][[j-1]]* move.prob))
+					move[[i]][[j]]	<- move[[i]][[j]] + ((popn.orig[[(i-1)]][[j]]* move.prob) + (popn.orig[[(i)]][[j-1]]* move.prob))
 					move[[(i-1)]][[j]] <- move.c <- move[[(i-1)]][[j]] + (popn.orig[[i]][[j]] * move.prob)
 					move[[i]][[(j-1)]] <- move.d <- move[[i]][[(j-1)]] + (popn.orig[[i]][[j]] * move.prob)
 					popn[[i]][[j]] <- popn[[i]][[j]] - (move.c + move.d)
 					print("i>=10 & j>=10")
 				}
 				if(i-1 <= 0 & (j-1) > 0 & j < ncol(hab.grid)){
-					move[[i]][[j]]	<- move[[i]][[j]] + (popn[[(i+1)]][[j]]* move.prob)
+					move[[i]][[j]]	<- move[[i]][[j]] + (popn.orig[[(i+1)]][[j]]* move.prob)
 	 				move[[i]][[(j-1)]] <- move.a <-  move[[i]][[(j-1)]] + (popn.orig[[i]][[j]] * move.prob)
 					move[[(i+1)]][[j]] <- move.c <- move[[(i+1)]][[j]] + (popn.orig[[i]][[j]] * move.prob)
 					move[[i]][[(j+1)]] <- move.d <- move[[i]][[(j+1)]] + (popn.orig[[i]][[j]] * move.prob)
 					popn[[i]][[j]] <- popn[[i]][[j]] - (move.a + move.c + move.d)
 				}
-				if(i+1 >= nrow(hab.grid) & (j-1) > 0 & j+1 < ncol(hab.grid)){
-					move[[i]][[j]]	<- move[[i]][[j]] + (popn[[(i-1)]][[j]] * move.prob)
+				if(i >= nrow(hab.grid) & (j-1) > 0 & j < ncol(hab.grid)){
+					move[[i]][[j]]	<- move[[i]][[j]] + (popn.orig[[(i-1)]][[j]] * move.prob)
 					move[[(i-1)]][[j]] <- move.b <- move[[(i-1)]][[j]] + (popn.orig[[i]][[j]] * move.prob)
 					move[[i]][[(j-1)]] <- move.a <- move[[i]][[(j-1)]] + (popn.orig[[i]][[j]] * move.prob)
 					move[[i]][[(j+1)]] <- move.d <- move[[i]][[(j+1)]] + (popn.orig[[i]][[j]] * move.prob)
 					popn[[i]][[j]] <- popn[[i]][[j]] - (move.b + move.a + move.d)
 				}
 				if(j-1 <= 0 & (i-1) > 0 & i < nrow(hab.grid)){
-					move[[i]][[j]]	<- move[[i]][[j]] + (popn[[i]][[(j+1)]] * move.prob)
+					move[[i]][[j]]	<- move[[i]][[j]] + (popn.orig[[i]][[(j+1)]] * move.prob)
 					move[[(i-1)]][[j]] <- move.a <- move[[(i-1)]][[j]] + (popn.orig[[i]][[j]] * move.prob)
 					move[[i]][[(j+1)]] <- move.d <- move[[i]][[(j+1)]] + (popn.orig[[i]][[j]] * move.prob)
 					move[[(i+1)]][[j]] <- move.c <- move[[(i+1)]][[j]] + (popn.orig[[i]][[j]] * move.prob)
 					popn[[i]][[j]] <- popn[[i]][[j]] - (move.a + move.d + move.c)
 				}
 				if(j >= ncol(hab.grid) & (i-1) > 0 & i < nrow(hab.grid)){
-					move[[i]][[j]]	<- move[[i]][[j]] + (popn[[i]][[(j-1)]] * move.prob)
+					move[[i]][[j]]	<- move[[i]][[j]] + (popn.orig[[i]][[(j-1)]] * move.prob)
 					move[[(i-1)]][[j]] <- move.b <- move[[(i-1)]][[j]] + (popn.orig[[i]][[j]] * move.prob)
 					move[[i]][[(j-1)]] <- move.a <- move[[i]][[(j-1)]] + (popn.orig[[i]][[j]] * move.prob)
 					move[[(i+1)]][[j]] <- move.c <- move[[(i+1)]][[j]] + (popn.orig[[i]][[j]] * move.prob)
