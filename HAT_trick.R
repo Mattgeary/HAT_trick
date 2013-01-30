@@ -110,7 +110,7 @@ move.grid.list[[1]] <- matrix(0, nrow=nrow(hab.grid), ncol=ncol(hab.grid)) ### F
 
 ##########################################################################################################################
 ######################################## Matrix multiplication ###########################################################
-
+source("movement.R")
 for(y in 1:days){
 	for(i in 1:nrow(hab.grid)){
 		for(j in 1:ncol(hab.grid)){
@@ -118,10 +118,10 @@ for(y in 1:days){
 		}
 	}
 	move.fun <- HAT_move(cell.popn, move, move.prob, hab.grid)
-	move.grid.list[,y+1] <- move.fun$move.grid
-	for(i in 1:nrow){
-		for(i in 1:ncol){
-		cell.popn[[i]][[j]] <- cell.popn[[i]][[j]] + move.fun$new.pop[[i]][[j]] + move.fun$movements
+	move.grid.list[[y+1]] <- move.fun$move.grid
+	for(i in 1:nrow(hab.grid)){
+		for(j in 1:ncol(hab.grid)){
+		cell.popn[[i]][[j]] <- cell.popn[[i]][[j]] + move.fun$new.pop[[i]][[j]] + move.fun$movements[[i]][[j]]
 		current.grid[i,j] <- sum(cell.popn[[i]][[j]])
 		}
 		current.pop[[i]] <- sapply(cell.popn[[i]], sum)
