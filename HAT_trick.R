@@ -61,9 +61,11 @@ cell.popn <- list()
 for(i in 1:nrow(hab.grid)){
 	cell.popn[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		cell.popn[[i]][[j]] <- N0
+		cell.popn[[i]][[j]] <- matrix(c(rep(0, 15)), ncol=1)
 	}
 }
+
+cell.popn[[1]][[1]] <- N0
 
 #### Matrix to store population sizes for each grid cell through the run ######
 popn.whole <- matrix(0,nrow = size^2, ncol=days+1) 
@@ -121,7 +123,7 @@ for(y in 1:days){
 	move.grid.list[[y+1]] <- move.fun$move.grid
 	for(i in 1:nrow(hab.grid)){
 		for(j in 1:ncol(hab.grid)){
-		cell.popn[[i]][[j]] <- cell.popn[[i]][[j]] + move.fun$new.pop[[i]][[j]] + move.fun$movements[[i]][[j]]
+		cell.popn[[i]][[j]] <- move.fun$new.pop[[i]][[j]] + move.fun$movements[[i]][[j]]
 		current.grid[i,j] <- sum(cell.popn[[i]][[j]])
 		}
 		current.pop[[i]] <- sapply(cell.popn[[i]], sum)
