@@ -25,7 +25,7 @@ row.adult <- 8:15
 col.adult <- 7:15
 
 # Movement probability
-move.prob <- matrix(c(rep(0, 6), rep(0.1, 9)), ncol=1)
+move.prob <- matrix(c(0, 0.00898,0.01250,0.01671,0.02170,0.02754,0.03423,0.04179,0.05019,0.05944,0.08043,rep(0.08043, 5)), ncol=1)
 
 # Fill matrix for pupae
 for(i in 1:6){
@@ -47,7 +47,7 @@ print(pop.mat)
 ##########################################################################################################################
 #################################### Create habitat grid #################################################################
 size <- 10 # Number of grid cells - move to initital stages eventually 
-days <- 30 # Number of days to simulate - move to initial stages eventually
+days <- 93 # Number of days to simulate - move to initial stages eventually
 hab.grid <- matrix(0, ncol=size, nrow=size)
 
 ########### Add habitat data ###############
