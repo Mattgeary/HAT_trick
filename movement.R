@@ -5,7 +5,7 @@ HAT_move <- function(popn, move, move.prob, hab.grid){
 			if((i-1) <= 0 | (j-1) <=0 | i >= nrow(hab.grid) | j >= ncol(hab.grid)){
 				print("yes")
 				if(i-1 <= 0 & j-1 <= 0){
-					move[[i]][[j]]	<- move[[i]][[j]] + ((popn[[(i+1)]][[j]]* move.prob) + (popn.orig[[(i)]][[j+1]]* move.prob))
+					move[[i]][[j]]	<- move[[i]][[j]] + ((popn[[(i+1)]][[j]] * move.prob) + (popn.orig[[(i)]][[j+1]]* move.prob))
 					move.c <- popn.orig[[i]][[j]] * move.prob
 					move.d <- popn.orig[[i]][[j]] * move.prob
 					move[[(i+1)]][[j]] <- move[[(i+1)]][[j]] + move.c
