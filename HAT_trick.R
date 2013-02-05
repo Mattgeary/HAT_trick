@@ -48,7 +48,7 @@ print(pop.mat)
 #################################### Create habitat grid #################################################################
 size <- 10 # Number of grid cells - move to initital stages eventually 
 days <- 93 # Number of days to simulate - move to initial stages eventually
-hab.grid <- matrix(0, ncol=size, nrow=size)
+hab.grid <- matrix(1, ncol=size, nrow=size)
 
 ########### Add habitat data ###############
 
