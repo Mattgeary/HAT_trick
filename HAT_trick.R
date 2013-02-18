@@ -27,6 +27,9 @@ col.adult <- 7:15
 # Movement probability
 move.prob <- matrix(c(0, 0.00898,0.01250,0.01671,0.02170,0.02754,0.03423,0.04179,0.05019,0.05944,0.08043,rep(0.08043, 4)), ncol=1)
 
+# Infection probability - should eventually be a column matrix
+infect <- 0.1
+
 # Fill matrix for pupae
 for(i in 1:6){
 pop.mat[row.pup[i], col.pup[i]] <- pup.surv
@@ -47,7 +50,7 @@ print(pop.mat)
 ##########################################################################################################################
 #################################### Create habitat grid #################################################################
 size <- 10 # Number of grid cells - move to initital stages eventually 
-days <- 93 # Number of days to simulate - move to initial stages eventually
+days <- 100 # Number of days to simulate - move to initial stages eventually
 hab.grid <- matrix(1, ncol=size, nrow=size)
 
 ########### Add habitat data ###############
@@ -61,11 +64,11 @@ cell.popn <- list()
 for(i in 1:nrow(hab.grid)){
 	cell.popn[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		cell.popn[[i]][[j]] <- matrix(c(rep(0, 15)), ncol=1)
+		cell.popn[[i]][[j]] <- matrix(c(rep(0, max(row.adult) * 2)), ncol=2)
 	}
 }
 
-cell.popn[[1]][[1]] <- N0
+cell.popn[[1]][[1]][,1] <- N0
 
 #### Matrix to store population sizes for each grid cell through the run ######
 popn.whole <- matrix(0,nrow = size^2, ncol=days+1) 
@@ -94,17 +97,30 @@ pop.grid <- list() ### List storing maps of the population during each run
 
 pop.grid[[1]] <- initial.pop ### First map in pop.grid set to be the initial population size
 
-current.grid <- matrix(NA, nrow=size, ncol=size) ### matrix tro store the current population map during each run
+infection.grid <- list() ### List storing maps of the infected population during each run
 
+infection.grid[[1]] <- initial.pop[,2] ### First map in infection.grid set to be the initial infected population size
+
+current.grid <- matrix(NA, nrow=size, ncol=size) ### matrix to store the current population map during each run
+current.grid.inf <- matrix(NA, nrow=size, ncol=size) ### matrix to store the current infected population map during each run
 ##### List to store movements of flies during each run #####
 move <- list()
-
 for(i in 1:nrow(hab.grid)){
 	move[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		move[[i]][[j]] <- 0
+		move[[i]][[j]] <- matrix(c(rep(0, max(row.adult) * 2)), ncol=2)
 	}
 }
+
+move.un <- list()
+for(i in 1:nrow(hab.grid)){
+	move.un[[i]] <- list()
+	for(j in 1:ncol(hab.grid)){
+		move.un[[i]][[j]] <- 0
+	}
+}
+
+move.inf <- move.un
 
 move.grid.list <- list() ### List to store maps of movement during each run
 
@@ -113,22 +129,28 @@ move.grid.list[[1]] <- matrix(0, nrow=nrow(hab.grid), ncol=ncol(hab.grid)) ### F
 ##########################################################################################################################
 ######################################## Matrix multiplication ###########################################################
 source("movement.R")
+source("infected.R")
 for(y in 1:days){
 	for(i in 1:nrow(hab.grid)){
 		for(j in 1:ncol(hab.grid)){
-			cell.popn[[i]][[j]] <-  pop.mat %*% matrix(cell.popn[[i]][[j]], ncol=1)
+			cell.popn[[i]][[j]] <-  pop.mat %*% matrix(cell.popn[[i]][[j]], ncol=2)
 		}
 	}
+	tryp <- infection(cell.popn, pop.mat, infect, row.pup, row.adult)
+	cell.popn <- tryp$cell.popn
 	move.fun <- HAT_move(cell.popn, move, move.prob, hab.grid)
 	move.grid.list[[y+1]] <- move.fun$move.grid
 	for(i in 1:nrow(hab.grid)){
 		for(j in 1:ncol(hab.grid)){
 		cell.popn[[i]][[j]] <- move.fun$new.pop[[i]][[j]] + move.fun$movements[[i]][[j]]
 		current.grid[i,j] <- sum(cell.popn[[i]][[j]])
+		current.grid.inf[i,j] <- sum(cell.popn[[i]][[j]][,2])
 		}
 		current.pop[[i]] <- sapply(cell.popn[[i]], sum)
 	}
 	popn.whole[,y +1] <- unlist(current.pop)
 	pop.grid[[y+1]] <- current.grid
+	infection.grid[[y+1]] <- current.grid.inf
+	print(c("			DAY => ", y))
 }
 
