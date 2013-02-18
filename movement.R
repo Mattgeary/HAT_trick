@@ -220,6 +220,16 @@ HAT_move <- function(popn, move, move.prob, hab.grid){
 		}
 	}
 
+###### Combine movements to produce popn list ##############
+	for(i in 1:nrow(hab.grid){
+		for(j in ncol(hab.grid){
+		popn[[i]][[j]][,1] <- popn.un[[i]][[j]]
+		popn[[i]][[j]][,2] <- popn.inf[[i]][[j]]
+		move[[i]][[j]][,1] <- move.un[[i]][[j]]
+		move[[i]][[j]][,2] <- move.inf[[i]][[j]]
+		}
+	}
+
 
 	return(list(new.pop = popn, movements = move, move.grid = list("uninfected"=move.grid.un, "infected"=move.grid.inf)))
 }
