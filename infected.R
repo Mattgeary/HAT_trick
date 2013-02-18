@@ -13,4 +13,5 @@ infect <- funtion(cell.popn, pop.mat, infect)
 			cell.popn[[i]][[j]] <- N
 		}
 	}
+ 	return(list(cell.popn = cell.popn))
 }
