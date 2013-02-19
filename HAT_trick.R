@@ -8,21 +8,24 @@ pup.surv <- 0.95
 # Adult survival
 adult.death <- 0.05 
 adult.surv <- 0.95
-
-# Fecundity
-fec <- 0.5
-breeding <- c(11:15)
-
-# Initial size and pop matrix
-N0 <- matrix(0, nrow=15, ncol=1)
-N0[1,1] <- 1000 # Initial number of pupae
-pop.mat <- matrix(0, nrow=15, ncol=15)
+feed.cycle = 3
 
 # Locations for demographic parameters
 row.pup <- 2:7
 col.pup <- 1:6
-row.adult <- 8:15
-col.adult <- 7:15
+max.age <- (max(row.pup) + (feed.cyle * 2) + 1)
+row.adult <- 8:max.age
+col.adult <- 7:max.age
+
+# Fecundity
+fec <- 0.5
+breeding <- c(11:max.age)
+
+# Initial size and pop matrix
+N0 <- matrix(0, nrow=max.age, ncol=1)
+N0[1,1] <- 1000 # Initial number of pupae
+pop.mat <- matrix(0, nrow=max.age, ncol=max.age)
+
 
 # Movement probability
 move.prob <- matrix(c(0, 0.00898,0.01250,0.01671,0.02170,0.02754,0.03423,0.04179,0.05019,0.05944,0.08043,rep(0.08043, 4)), ncol=1)
@@ -31,14 +34,16 @@ move.prob <- matrix(c(0, 0.00898,0.01250,0.01671,0.02170,0.02754,0.03423,0.04179
 infect <- 0.1
 
 # Fill matrix for pupae
-for(i in 1:6){
+for(i in 1:length(row.pup)){
 pop.mat[row.pup[i], col.pup[i]] <- pup.surv
 }
 
 # Fill matrix for adults
-for(i in 1:8){
+for(i in 1:length(row.adult)){
 pop.mat[row.adult[i], col.adult[i]] <- adult.surv
 }
+
+pop.mat[max(row.adult), max(col.adult)] <- adult.surv
 
 # Fill fecundity
 for(i in min(breeding):max(breeding)){
@@ -50,7 +55,7 @@ print(pop.mat)
 ##########################################################################################################################
 #################################### Create habitat grid #################################################################
 size <- 10 # Number of grid cells - move to initital stages eventually 
-days <- 100 # Number of days to simulate - move to initial stages eventually
+days <- (365) # Number of days to simulate - move to initial stages eventually
 hab.grid <- matrix(1, ncol=size, nrow=size)
 
 ########### Add habitat data ###############
@@ -64,11 +69,17 @@ cell.popn <- list()
 for(i in 1:nrow(hab.grid)){
 	cell.popn[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		cell.popn[[i]][[j]] <- matrix(c(rep(0, max(row.adult) * 2)), ncol=2)
+		cell.popn[[i]][[j]] <- matrix(c(rep(0, (max.age * 2)), ncol=2)
 	}
 }
 
-cell.popn[[1]][[1]][,1] <- N0
+# Assign an intitial population to invididual or randomly chosen cells
+rand.x <- sample(1:size, 10)
+rand.y <- sample(1:size, 10)
+for(i in 1:length(rand.x)){
+cell.popn[[rand.x[i]]][[rand.y[i]]][,1] <- N0
+}
+#cell.popn[[1]][[1]][,1] <- N0
 
 #### Matrix to store population sizes for each grid cell through the run ######
 popn.whole <- matrix(0,nrow = size^2, ncol=days+1) 
@@ -108,7 +119,7 @@ move <- list()
 for(i in 1:nrow(hab.grid)){
 	move[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		move[[i]][[j]] <- matrix(c(rep(0, max(row.adult) * 2)), ncol=2)
+		move[[i]][[j]] <- matrix(c(rep(0, (max.age * 2)), ncol=2)
 	}
 }
 
