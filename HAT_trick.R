@@ -13,7 +13,7 @@ feed.cycle = 3
 # Locations for demographic parameters
 row.pup <- 2:7
 col.pup <- 1:6
-max.age <- (max(row.pup) + (feed.cyle * 2) + 1)
+max.age <- (max(row.pup) + (feed.cycle * 2) + 3)
 row.adult <- 8:max.age
 col.adult <- 7:max.age
 
@@ -28,7 +28,7 @@ pop.mat <- matrix(0, nrow=max.age, ncol=max.age)
 
 
 # Movement probability
-move.prob <- matrix(c(0, 0.00898,0.01250,0.01671,0.02170,0.02754,0.03423,0.04179,0.05019,0.05944,0.08043,rep(0.08043, 4)), ncol=1)
+move.prob <- matrix(c(0, 0.00898,0.01250,0.01671,0.02170,0.02754,0.03423,0.04179,0.05019,0.05944,0.08043,rep(0.08043, 5)), ncol=1)
 
 # Infection probability - should eventually be a column matrix
 infect <- 0.1
@@ -69,7 +69,7 @@ cell.popn <- list()
 for(i in 1:nrow(hab.grid)){
 	cell.popn[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		cell.popn[[i]][[j]] <- matrix(c(rep(0, (max.age * 2)), ncol=2)
+		cell.popn[[i]][[j]] <- matrix(c(rep(0, (max.age * 2))), ncol=2)
 	}
 }
 
@@ -119,7 +119,7 @@ move <- list()
 for(i in 1:nrow(hab.grid)){
 	move[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		move[[i]][[j]] <- matrix(c(rep(0, (max.age * 2)), ncol=2)
+		move[[i]][[j]] <- matrix(c(rep(0, (max.age * 2))), ncol=2)
 	}
 }
 
