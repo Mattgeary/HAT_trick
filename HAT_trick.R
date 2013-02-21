@@ -50,11 +50,11 @@ for(i in min(breeding):max(breeding)){
 pop.mat[1,i] <- fec
 }
 
-print(N0)
-print(pop.mat)
+#print(N0)
+#print(pop.mat)
 ##########################################################################################################################
 #################################### Create habitat grid #################################################################
-size <- 10 # Number of grid cells - move to initital stages eventually 
+size <- 50 # Number of grid cells - move to initital stages eventually 
 days <- (365) # Number of days to simulate - move to initial stages eventually
 hab.grid <- matrix(1, ncol=size, nrow=size)
 
@@ -81,8 +81,39 @@ cell.popn[[rand.x[i]]][[rand.y[i]]][,1] <- N0
 }
 #cell.popn[[1]][[1]][,1] <- N0
 
+### Human population ###
+
+human.popn <- list()
+
+for(i in 1:nrow(hab.grid)){
+	human.popn[[i]] <- list()
+	for(j in 1:ncol(hab.grid)){
+		human.popn[[i]][[j]] <- matrix(c(0,1,0,0), ncol=2)
+	}
+}
+
+#### Ox Equivalent population ####
+
+
+OE.popn <- list()
+
+for(i in 1:nrow(hab.grid)){
+	OE.popn[[i]] <- list()
+	for(j in 1:ncol(hab.grid)){
+		OE.popn[[i]][[j]] <- matrix(c(1,0), ncol=2)
+	}
+}
+
 #### Matrix to store population sizes for each grid cell through the run ######
 popn.whole <- matrix(0,nrow = size^2, ncol=days+1) 
+
+detect.whole <- matrix(0,nrow = size^2, ncol=days)
+
+visit.whole <- matrix(0,nrow = size^2, ncol=days)
+
+probe.whole <- matrix(0,nrow = size^2, ncol=days) 
+
+feed.whole <- matrix(0,nrow = size^2, ncol=days)   
 
 
 ##### Calculate initial population size for each grid cell and store in the first column of popn.whole #####
@@ -104,9 +135,16 @@ initial.pop <- matrix(initial.pop, nrow= size, ncol=size, byrow=T)
 
 current.pop <- list() ### Population calculated during each run
 
+current.detect <- list()
+current.visit <- list()
+current.probe <- list()
+current.feed <- list()
+
 pop.grid <- list() ### List storing maps of the population during each run
 
 pop.grid[[1]] <- initial.pop ### First map in pop.grid set to be the initial population size
+
+
 
 infection.grid <- list() ### List storing maps of the infected population during each run
 
@@ -140,6 +178,7 @@ move.grid.list[[1]] <- matrix(0, nrow=nrow(hab.grid), ncol=ncol(hab.grid)) ### F
 ##########################################################################################################################
 ######################################## Matrix multiplication ###########################################################
 source("movement.R")
+source("feed.R")
 source("infected.R")
 for(y in 1:days){
 	for(i in 1:nrow(hab.grid)){
@@ -147,7 +186,8 @@ for(y in 1:days){
 			cell.popn[[i]][[j]] <-  pop.mat %*% matrix(cell.popn[[i]][[j]], ncol=2)
 		}
 	}
-	tryp <- infection(cell.popn, pop.mat, infect, row.pup, row.adult)
+	hunger.cycle <- feed_fun(habitat = hab.grid, popn = cell.popn, human = human.popn, OE = OE.popn, feed.cycle = feed.cycle, adult = col.adult)	
+	tryp <- infection(popn = hunger.cycle$cell.popn, probe = hunger.cycle$probe, infect = infect, row.pup, row.adult)
 	cell.popn <- tryp$cell.popn
 	move.fun <- HAT_move(cell.popn, move, move.prob, hab.grid)
 	move.grid.list[[y+1]] <- move.fun$move.grid
@@ -158,10 +198,18 @@ for(y in 1:days){
 		current.grid.inf[i,j] <- sum(cell.popn[[i]][[j]][,2])
 		}
 		current.pop[[i]] <- sapply(cell.popn[[i]], sum)
+		current.detect[[i]] <- sapply(hunger.cycle$detect[[i]], sum)
+		current.visit[[i]] <- sapply(hunger.cycle$visit[[i]], sum)
+		current.probe[[i]] <- sapply(hunger.cycle$probe[[i]], sum)
+		current.feed[[i]] <- sapply(hunger.cycle$feed[[i]], sum)
 	}
 	popn.whole[,y +1] <- unlist(current.pop)
+	detect.whole[,y] <- unlist(current.detect)	
+	visit.whole[,y] <- unlist(current.visit)
+	probe.whole[,y] <- unlist(current.probe)	
+	feed.whole[,y] <- unlist(current.feed)		
 	pop.grid[[y+1]] <- current.grid
 	infection.grid[[y+1]] <- current.grid.inf
-	print(c("			DAY => ", y))
+	print(c("DAY => ", y))
 }
 

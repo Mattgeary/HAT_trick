@@ -108,7 +108,6 @@ HAT_move <- function(popn, move, move.prob, hab.grid){
 				popn.un[[i]][[j]] <- popn.un[[i]][[j]] - (move.a + move.b + move.c + move.d)
 			}
 		}
-	print(c(i, "Uninfect"))
 	}
 	move.grid.un <- matrix(0, nrow=nrow(hab.grid), ncol=ncol(hab.grid))
 	for(i in 1:nrow(hab.grid)){
@@ -214,7 +213,6 @@ HAT_move <- function(popn, move, move.prob, hab.grid){
 				popn.inf[[i]][[j]] <- popn.inf[[i]][[j]] - (move.a + move.b + move.c + move.d)
 			}
 		}
-	print(c(i, "Infect"))
 	}
 	move.grid.inf <- matrix(0, nrow=nrow(hab.grid), ncol=ncol(hab.grid))
 	for(i in 1:nrow(hab.grid)){
