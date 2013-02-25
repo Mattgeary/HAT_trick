@@ -1,15 +1,19 @@
 HAT_move <- function(popn, move, move.prob, hab.grid){
 	popn.un <- list()
+	popn.inc <- list
 	popn.inf <- list()
 	for(i in 1:nrow(hab.grid)){
 		popn.un[[i]] <- list()
+		popn.inc[[i]] <- list()
 		popn.inf[[i]] <- list()
 		for(j in 1:ncol(hab.grid)){
 			popn.un[[i]][[j]] <- matrix(c(popn[[i]][[j]][,1]), ncol=1)
-			popn.inf[[i]][[j]] <- matrix(c(popn[[i]][[j]][,2]), ncol=1)
+			popn.inc[[i]][[j]] <- matrix(c(popn[[i]][[j]][,2]), ncol=1)
+			popn.inf[[i]][[j]] <- matrix(c(popn[[i]][[j]][,3]), ncol=1)
 		}
 	}
 	popn.orig.un <- popn.un
+	popn.orig.inc <- popn.un
 	popn.orig.inf <- popn.inf
 
 ####### Uninfected #######
@@ -113,6 +117,111 @@ HAT_move <- function(popn, move, move.prob, hab.grid){
 	for(i in 1:nrow(hab.grid)){
 		for(j in 1:ncol(hab.grid)){
 			move.grid.un[i,j] <- sum(move.un[[i]][[j]])
+		}
+	}
+
+############# Incubating ###################
+	for(i in 1:nrow(hab.grid)){
+		for(j in 1:ncol(hab.grid)){
+			if((i-1) <= 0 | (j-1) <=0 | i >= nrow(hab.grid) | j >= ncol(hab.grid)){
+				
+				if(i-1 <= 0 & j-1 <= 0){
+					move.inc[[i]][[j]]<- move.inc[[i]][[j]] + ((popn.inc[[(i+1)]][[j]] * move.prob) * (hab.grid[i+1,j]/hab.grid[i,j])  + (popn.orig.inc[[(i)]][[j+1]]* move.prob) * (hab.grid[i+1,j]/hab.grid[i,j]))
+					move.c <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i+1,j]/hab.grid[i,j])
+					move.d <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i,j+1]/hab.grid[i,j])
+					move.inc[[(i+1)]][[j]] <- move.inc[[(i+1)]][[j]] + move.c
+					move.inc[[i]][[(j+1)]] <- move.inc[[i]][[(j+1)]] + move.d
+					popn.inc[[i]][[j]] <- popn.inc[[i]][[j]] - (move.c + move.d) * 2
+				}
+
+				if(i-1 <= 0 & j >= ncol(hab.grid)){
+					move.inc[[i]][[j]] <- move.inc[[i]][[j]] + ((popn.orig.inc[[(i+1)]][[j]]* move.prob) * (hab.grid[i+1,j]/hab.grid[i,j]) + (popn.orig.inc[[(i)]][[j-1]]* move.prob) * (hab.grid[i,j-1]/hab.grid[i,j]))
+					move.c <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i+1,j]/hab.grid[i,j])
+					move.a <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i,j-1]/hab.grid[i,j])
+					move.inc[[(i+1)]][[j]] <- move.inc[[(i+1)]][[j]] + move.c
+					move.inc[[i]][[(j-1)]] <- move.inc[[i]][[(j-1)]] + move.a 
+					popn.inc[[i]][[j]] <- popn.inc[[i]][[j]] - (move.c + move.a) * 2
+				}
+
+				if(i >= nrow(hab.grid) & (j-1) <= 0){
+					move.inc[[i]][[j]] <- move.inc[[i]][[j]] + ((popn.orig.inc[[(i-1)]][[j]]* move.prob)* (hab.grid[i-1,j]/hab.grid[i,j]) + (popn.orig.inc[[(i)]][[j+1]]* move.prob) * (hab.grid[i,j+1]/hab.grid[i,j]))
+					move.b <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i-1,j]/hab.grid[i,j])	
+					move.d <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i,j+1]/hab.grid[i,j])
+					move.inc[[(i-1)]][[j]] <- move.inc[[(i-1)]][[j]] + move.b
+					move.inc[[i]][[(j+1)]] <- move.inc[[i]][[(j+1)]] + move.d
+					popn.inc[[i]][[j]] <- popn.inc[[i]][[j]] - (move.b + move.d) * 2
+				}
+
+				if(i >= nrow(hab.grid) & j >= ncol(hab.grid)){
+					move.inc[[i]][[j]] <- move.inc[[i]][[j]] + ((popn.orig.inc[[(i-1)]][[j]]* move.prob) * (hab.grid[i-1,j]/hab.grid[i,j])+ (popn.orig.inc[[(i)]][[j-1]]* move.prob) * (hab.grid[i,j-1]/hab.grid[i,j]))
+					move.b <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i-1,j]/hab.grid[i,j])
+					move.a <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i,j-1]/hab.grid[i,j])
+					move.inc[[(i-1)]][[j]] <- move.inc[[(i-1)]][[j]] + move.b
+					move.inc[[i]][[(j-1)]] <- move.inc[[i]][[(j-1)]] + move.a
+					popn.inc[[i]][[j]] <- popn.inc[[i]][[j]] - (move.b + move.a) * 2
+				}
+
+				if(i-1 <= 0 & (j-1) > 0 & j < ncol(hab.grid)){
+					move.inc[[i]][[j]] <- move.inc[[i]][[j]] + (popn.orig.inc[[(i+1)]][[j]]* move.prob) * (hab.grid[i+1,j]/hab.grid[i,j])
+					move.a <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i,j-1]/hab.grid[i,j])
+					move.c <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i+1,j]/hab.grid[i,j])
+					move.d <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i,j+1]/hab.grid[i,j])
+	 				move.inc[[i]][[(j-1)]] <- move.inc[[i]][[(j-1)]] + move.a
+					move.inc[[(i+1)]][[j]] <- move.inc[[(i+1)]][[j]] + move.c
+					move.inc[[i]][[(j+1)]] <- move.inc[[i]][[(j+1)]] + move.d
+					popn.inc[[i]][[j]] <- popn.inc[[i]][[j]] - (move.a + (move.c * 2) + move.d)
+				}
+
+				if(i >= nrow(hab.grid) & (j-1) > 0 & j < ncol(hab.grid)){
+					move.inc[[i]][[j]] <- move.inc[[i]][[j]] + (popn.orig.inc[[(i-1)]][[j]] * move.prob)  * (hab.grid[i-1,j]/hab.grid[i,j])
+					move.b <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i-1,j]/hab.grid[i,j])
+					move.a <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i,j-1]/hab.grid[i,j])
+					move.d <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i,j+1]/hab.grid[i,j])
+					move.inc[[(i-1)]][[j]] <- move.inc[[(i-1)]][[j]] + move.b
+					move.inc[[i]][[(j-1)]] <- move.inc[[i]][[(j-1)]] + move.a
+					move.inc[[i]][[(j+1)]] <- move.inc[[i]][[(j+1)]] + move.d
+					popn.inc[[i]][[j]] <- popn.inc[[i]][[j]] - ((move.b *2) + move.a + move.d)
+				}
+
+				if(j-1 <= 0 & (i-1) > 0 & i < nrow(hab.grid)){
+					move.inc[[i]][[j]] <- move.inc[[i]][[j]] + (popn.orig.inc[[i]][[(j+1)]] * move.prob) * (hab.grid[i,j+1]/hab.grid[i,j])
+					move.b <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i-1,j]/hab.grid[i,j])
+					move.d <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i,j+1]/hab.grid[i,j])
+					move.c <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i+1,j]/hab.grid[i,j])
+					move.inc[[(i-1)]][[j]] <- move.inc[[(i-1)]][[j]] + move.b
+					move.inc[[i]][[(j+1)]] <- move.inc[[i]][[(j+1)]] + move.d
+					move.inc[[(i+1)]][[j]] <- move.inc[[(i+1)]][[j]] + move.c
+					popn.inc[[i]][[j]] <- popn.inc[[i]][[j]] - (move.b + (move.d * 2) + move.c)
+				}
+
+				if(j >= ncol(hab.grid) & (i-1) > 0 & i < nrow(hab.grid)){
+					move.inc[[i]][[j]] <- move.inc[[i]][[j]] + (popn.orig.inc[[i]][[(j-1)]] * move.prob) * (hab.grid[i,j-1]/hab.grid[i,j])
+					move.b <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i-1,j]/hab.grid[i,j])
+					move.a <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i,j-1]/hab.grid[i,j])
+					move.c <- (popn.orig.inc[[i]][[j]] * move.prob) * (hab.grid[i+1,j]/hab.grid[i,j])
+					move.inc[[(i-1)]][[j]] <- move.inc[[(i-1)]][[j]] + move.b
+					move.inc[[i]][[(j-1)]] <- move.inc[[i]][[(j-1)]] + move.a 
+					move.inc[[(i+1)]][[j]] <- move.inc[[(i+1)]][[j]] + move.c 
+					popn.inc[[i]][[j]] <- popn.inc[[i]][[j]] - (move.b + (move.a * 2) + move.c)
+				}
+				
+			} else {
+				move.a <- popn.orig.inc[[i]][[j]] * move.prob * (hab.grid[i,j-1]/hab.grid[i,j])
+				move.b <- popn.orig.inc[[i]][[j]] * move.prob * (hab.grid[i-1,j]/hab.grid[i,j])
+				move.c <- popn.orig.inc[[i]][[j]] * move.prob * (hab.grid[i+1,j]/hab.grid[i,j])
+				move.d <- popn.orig.inc[[i]][[j]] * move.prob * (hab.grid[i,j+1]/hab.grid[i,j])
+				move.inc[[i]][[j-1]] <- move.inc[[i]][[(j-1)]] + move.a
+	 			move.inc[[i-1]][[j]] <- move.inc[[(i-1)]][[j]] + move.b
+				move.inc[[i+1]][[j]] <- move.inc[[(i+1)]][[j]] + move.c
+				move.inc[[i]][[j+1]] <- move.inc[[i]][[(j+1)]] + move.d
+				popn.inc[[i]][[j]] <- popn.inc[[i]][[j]] - (move.a + move.b + move.c + move.d)
+			}
+		}
+	}
+	move.grid.inc <- matrix(0, nrow=nrow(hab.grid), ncol=ncol(hab.grid))
+	for(i in 1:nrow(hab.grid)){
+		for(j in 1:ncol(hab.grid)){
+			move.grid.inc[i,j] <- sum(move.inc[[i]][[j]])
 		}
 	}
 
@@ -225,9 +334,11 @@ HAT_move <- function(popn, move, move.prob, hab.grid){
 	for(i in 1:nrow(hab.grid)){
 		for(j in 1:ncol(hab.grid)){
 		popn[[i]][[j]][,1] <- popn.un[[i]][[j]]
-		popn[[i]][[j]][,2] <- popn.inf[[i]][[j]]
+		popn[[i]][[j]][,2] <- popn.inc[[i]][[j]]
+		popn[[i]][[j]][,3] <- popn.inf[[i]][[j]]
 		move[[i]][[j]][,1] <- move.un[[i]][[j]]
-		move[[i]][[j]][,2] <- move.inf[[i]][[j]]
+		move[[i]][[j]][,3] <- move.inc[[i]][[j]]
+		move[[i]][[j]][,3] <- move.inf[[i]][[j]]
 		}
 	}
 
