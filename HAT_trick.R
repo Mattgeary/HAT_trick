@@ -69,7 +69,7 @@ cell.popn <- list()
 for(i in 1:nrow(hab.grid)){
 	cell.popn[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		cell.popn[[i]][[j]] <- matrix(c(rep(0, (max.age * 2))), ncol=2)
+		cell.popn[[i]][[j]] <- matrix(c(rep(0, (max.age * 3))), ncol=3)
 	}
 }
 
@@ -88,7 +88,7 @@ human.popn <- list()
 for(i in 1:nrow(hab.grid)){
 	human.popn[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		human.popn[[i]][[j]] <- matrix(c(0,1,0,0), ncol=2)
+		human.popn[[i]][[j]] <- matrix(c(0,1,0,0,0,0,0,0), ncol=4)
 	}
 }
 
@@ -100,7 +100,7 @@ OE.popn <- list()
 for(i in 1:nrow(hab.grid)){
 	OE.popn[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		OE.popn[[i]][[j]] <- matrix(c(1,0), ncol=2)
+		OE.popn[[i]][[j]] <- matrix(c(10,0,0,0), ncol=2)
 	}
 }
 
@@ -180,6 +180,8 @@ move.grid.list[[1]] <- matrix(0, nrow=nrow(hab.grid), ncol=ncol(hab.grid)) ### F
 source("movement.R")
 source("feed.R")
 source("infected.R")
+pb <- txtProgressBar(min = 0, max = days, style = 3)
+
 for(y in 1:days){
 	for(i in 1:nrow(hab.grid)){
 		for(j in 1:ncol(hab.grid)){
@@ -210,6 +212,7 @@ for(y in 1:days){
 	feed.whole[,y] <- unlist(current.feed)		
 	pop.grid[[y+1]] <- current.grid
 	infection.grid[[y+1]] <- current.grid.inf
-	print(c("DAY => ", y))
+	#print(c("DAY => ", y))
+	setTxtProgressBar(pb, y)
 }
 
