@@ -169,6 +169,7 @@ for(i in 1:nrow(hab.grid)){
 	}
 }
 
+move.inc <- move.un
 move.inf <- move.un
 
 move.grid.list <- list() ### List to store maps of movement during each run
@@ -189,7 +190,7 @@ for(y in 1:days){
 		}
 	}
 	hunger.cycle <- feed_fun(habitat = hab.grid, popn = cell.popn, human = human.popn, OE = OE.popn, feed.cycle = feed.cycle, adult = col.adult)	
-	tryp <- infection(popn = hunger.cycle$cell.popn, probe = hunger.cycle$probe, infect = infect, row.pup, row.adult)
+	tryp <- infection(popn = hunger.cycle$cell.popn, probe = hunger.cycle$probe, feed = hunger.cycle.feed,  transmission = infect, row.pup, row.adult)
 	cell.popn <- tryp$cell.popn
 	move.fun <- HAT_move(cell.popn, move, move.prob, hab.grid)
 	move.grid.list[[y+1]] <- move.fun$move.grid

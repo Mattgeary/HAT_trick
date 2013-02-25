@@ -7,7 +7,7 @@ feed_fun <- function(habitat, popn, human, OE, feed.cycle = 3, feeds=feeds.defau
 		for(i in 1:nrow(habitat)){
 			p.list[[i]] <- list()
 			for(j in 1:ncol(hab.grid)){
-				p.list[[i]][[j]] <- matrix(c(rep(0, (max.age * 4))), ncol=4)
+				p.list[[i]][[j]] <- matrix(c(rep(0, (max.age * 3))), ncol=3)
 			}
 		}
 		detection.human <- p.list
@@ -35,7 +35,7 @@ feed_fun <- function(habitat, popn, human, OE, feed.cycle = 3, feeds=feeds.defau
 
 				detection.OE[[i]][[j]][min(adult) + feed.cycle + 1,] <-	(popn[[i]][[j]][min(adult) + feed.cycle + 1,] * (1 - ((1 - feeds[["detect.ambush"]]$OE[3]) ^ sum(OE[[i]][[j]])))) + (popn[[i]][[j]][min(adult) + feed.cycle + 1,] * (1 - ((1 - feeds[["detect.ranging"]]$OE[3]) ^ sum(OE[[i]][[j]]))))				
 
-				detection,human[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] <- (popn[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] * (1 - ((1 - feeds[["detect.ambush"]]$human[4]) ^ sum(human[[i]][[j]])))) + (popn[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] * (1 - ((1 - feeds[["detect.ranging"]]$human[4]) ^ sum(human[[i]][[j]])))) 		
+				detection.human[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] <- (popn[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] * (1 - ((1 - feeds[["detect.ambush"]]$human[4]) ^ sum(human[[i]][[j]])))) + (popn[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] * (1 - ((1 - feeds[["detect.ranging"]]$human[4]) ^ sum(human[[i]][[j]])))) 		
 
 				detection.OE[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] <- (popn[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] * (1 - ((1 - feeds[["detect.ambush"]]$OE[4]) ^ sum(OE[[i]][[j]])))) + (popn[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] * (1 - ((1 - feeds[["detect.ranging"]]$OE[4]) ^ sum(OE[[i]][[j]]))))		
 
@@ -82,7 +82,7 @@ feed_fun <- function(habitat, popn, human, OE, feed.cycle = 3, feeds=feeds.defau
 
 				feed.OE[[i]][[j]][min(adult),] <- (probe.OE[[i]][[j]][min(adult),] * feeds[["feed"]]$OE[1]) 
 				
-				feed,human[[i]][[j]][min(adult) + 1,] <- (probe.human[[i]][[j]][min(adult) + 1,] * feeds[["feed"]]$human[2])
+				feed.human[[i]][[j]][min(adult) + 1,] <- (probe.human[[i]][[j]][min(adult) + 1,] * feeds[["feed"]]$human[2])
 
 				feed.OE[[i]][[j]][min(adult) + 1,] <- (probe.OE[[i]][[j]][min(adult) + 1,] * feeds[["feed"]]$OE[2])
 				
@@ -90,7 +90,7 @@ feed_fun <- function(habitat, popn, human, OE, feed.cycle = 3, feeds=feeds.defau
 
 				feed.OE[[i]][[j]][min(adult) + feed.cycle + 1,] <- (probe.OE[[i]][[j]][min(adult) + feed.cycle + 1,] * feeds[["feed"]]$OE[3])
 
-				feed,human[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] <- (probe.human[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] * feeds[["feed"]]$human[4])
+				feed.human[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] <- (probe.human[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] * feeds[["feed"]]$human[4])
 
 				feed.OE[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] <- (probe.OE[[i]][[j]][min(adult) + (feed.cycle * 2)+ 1,] * feeds[["feed"]]$OE[4])
 
@@ -106,6 +106,6 @@ feed_fun <- function(habitat, popn, human, OE, feed.cycle = 3, feeds=feeds.defau
 
 			}
 		}
-	return(list(popn = popn, feed = list("human" = feed.human, "OE" = feed.OE), probe = list("human" = probe.human, "OE" = probe.OE), visit = list("human" = visit.human, "OE" = visit.OE), detect = list("human" = detection.human, "OE" = detection.OE))
+	return(list(popn = popn, feed = list("human" = feed.human, "OE" = feed.OE), probe = list("human" = probe.human, "OE" = probe.OE), visit = list("human" = visit.human, "OE" = visit.OE), detect = list("human" = detection.human, "OE" = detection.OE)))
 }
 
