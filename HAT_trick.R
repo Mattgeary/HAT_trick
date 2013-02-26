@@ -54,7 +54,7 @@ pop.mat[1,i] <- fec
 #print(pop.mat)
 ##########################################################################################################################
 #################################### Create habitat grid #################################################################
-size <- 50 # Number of grid cells - move to initital stages eventually 
+size <- 10 # Number of grid cells - move to initital stages eventually 
 days <- (365) # Number of days to simulate - move to initial stages eventually
 hab.grid <- matrix(1, ncol=size, nrow=size)
 
@@ -186,12 +186,14 @@ pb <- txtProgressBar(min = 0, max = days, style = 3)
 for(y in 1:days){
 	for(i in 1:nrow(hab.grid)){
 		for(j in 1:ncol(hab.grid)){
-			cell.popn[[i]][[j]] <-  pop.mat %*% matrix(cell.popn[[i]][[j]], ncol=2)
+			cell.popn[[i]][[j]] <-  pop.mat %*% matrix(cell.popn[[i]][[j]], ncol=3)
 		}
 	}
 	hunger.cycle <- feed_fun(habitat = hab.grid, popn = cell.popn, human = human.popn, OE = OE.popn, feed.cycle = feed.cycle, adult = col.adult)	
-	tryp <- infection(popn = hunger.cycle$cell.popn, probe = hunger.cycle$probe, feed = hunger.cycle.feed,  transmission = infect, row.pup, row.adult)
+	tryp <- infection(popn = hunger.cycle$cell.popn, probe = hunger.cycle$probe, feed = hunger.cycle.feed,  transmission = infect, adult = row.adult)
 	cell.popn <- tryp$cell.popn
+	human.popn <- tryp$human
+	OE$popn <- tryp$OE
 	move.fun <- HAT_move(cell.popn, move, move.prob, hab.grid)
 	move.grid.list[[y+1]] <- move.fun$move.grid
 	for(i in 1:nrow(hab.grid)){
@@ -201,16 +203,16 @@ for(y in 1:days){
 		current.grid.inf[i,j] <- sum(cell.popn[[i]][[j]][,2])
 		}
 		current.pop[[i]] <- sapply(cell.popn[[i]], sum)
-		current.detect[[i]] <- sapply(hunger.cycle$detect[[i]], sum)
-		current.visit[[i]] <- sapply(hunger.cycle$visit[[i]], sum)
-		current.probe[[i]] <- sapply(hunger.cycle$probe[[i]], sum)
-		current.feed[[i]] <- sapply(hunger.cycle$feed[[i]], sum)
+		#current.detect[[i]] <- sapply(hunger.cycle$detect[[i]], sum)
+		#current.visit[[i]] <- sapply(hunger.cycle$visit[[i]], sum)
+		#current.probe[[i]] <- sapply(hunger.cycle$probe[[i]], sum)
+		#current.feed[[i]] <- sapply(hunger.cycle$feed[[i]], sum)
 	}
 	popn.whole[,y +1] <- unlist(current.pop)
-	detect.whole[,y] <- unlist(current.detect)	
-	visit.whole[,y] <- unlist(current.visit)
-	probe.whole[,y] <- unlist(current.probe)	
-	feed.whole[,y] <- unlist(current.feed)		
+	#detect.whole[,y] <- unlist(current.detect)	
+	#visit.whole[,y] <- unlist(current.visit)
+	#probe.whole[,y] <- unlist(current.probe)	
+	#feed.whole[,y] <- unlist(current.feed)		
 	pop.grid[[y+1]] <- current.grid
 	infection.grid[[y+1]] <- current.grid.inf
 	#print(c("DAY => ", y))
