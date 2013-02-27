@@ -1,6 +1,6 @@
 HAT_move <- function(popn, move, move.prob, hab.grid){
 	popn.un <- list()
-	popn.inc <- list
+	popn.inc <- list()
 	popn.inf <- list()
 	for(i in 1:nrow(hab.grid)){
 		popn.un[[i]] <- list()

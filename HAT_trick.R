@@ -31,7 +31,8 @@ pop.mat <- matrix(0, nrow=max.age, ncol=max.age)
 move.prob <- matrix(c(0, 0.00898,0.01250,0.01671,0.02170,0.02754,0.03423,0.04179,0.05019,0.05944,0.08043,rep(0.08043, 5)), ncol=1)
 
 # Infection probability - should eventually be a column matrix
-infect <- 0.1
+#infect <- 0.1
+infect <- list(probe = data.frame("human" = 0.1, "OE" = 0.1), feed = data.frame("human" = 0.1, "OE"= 0.1), mature = data.frame("tsetse" = 0.033, "human" = 0.05, "OE" = 0.05), recover = data.frame("human" = 0.05, "OE" = 0.1)) 
 
 # Fill matrix for pupae
 for(i in 1:length(row.pup)){
@@ -81,6 +82,17 @@ cell.popn[[rand.x[i]]][[rand.y[i]]][,1] <- N0
 }
 #cell.popn[[1]][[1]][,1] <- N0
 
+# Assign some intial infected flies #
+
+rand.x <- sample(1:size, 10, replace=T)
+rand.y <- sample(1:size, 10, replace=T)
+rand.z <- sample(8:max.age, 10, replace=T)
+rand.fly <- sample(20:200, 10, replace=T)
+for(i in 1:length(rand.x)){
+cell.popn[[rand.x[i]]][[rand.y[i]]][rand.z[i],2] <- rand.fly[i]
+}
+
+
 ### Human population ###
 
 human.popn <- list()
@@ -100,7 +112,7 @@ OE.popn <- list()
 for(i in 1:nrow(hab.grid)){
 	OE.popn[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		OE.popn[[i]][[j]] <- matrix(c(10,0,0,0), ncol=2)
+		OE.popn[[i]][[j]] <- matrix(c(10,0,0,0), ncol=4)
 	}
 }
 
@@ -157,7 +169,7 @@ move <- list()
 for(i in 1:nrow(hab.grid)){
 	move[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		move[[i]][[j]] <- matrix(c(rep(0, (max.age * 2))), ncol=2)
+		move[[i]][[j]] <- matrix(c(rep(0, (max.age * 3))), ncol=3)
 	}
 }
 
@@ -190,11 +202,11 @@ for(y in 1:days){
 		}
 	}
 	hunger.cycle <- feed_fun(habitat = hab.grid, popn = cell.popn, human = human.popn, OE = OE.popn, feed.cycle = feed.cycle, adult = col.adult)	
-	tryp <- infection(popn = hunger.cycle$cell.popn, probe = hunger.cycle$probe, feed = hunger.cycle.feed,  transmission = infect, adult = row.adult)
-	cell.popn <- tryp$cell.popn
+	tryp <- infection(popn = hunger.cycle$popn, human = human.popn, OE = OE.popn, probe = hunger.cycle$probe, feed = hunger.cycle$feed,  transmission = infect, adult = row.adult)
+	cell.popn <- tryp$popn
 	human.popn <- tryp$human
 	OE$popn <- tryp$OE
-	move.fun <- HAT_move(cell.popn, move, move.prob, hab.grid)
+	move.fun <- HAT_move(popn = cell.popn, move = move, move.prob = move.prob, hab.grid = hab.grid)
 	move.grid.list[[y+1]] <- move.fun$move.grid
 	for(i in 1:nrow(hab.grid)){
 		for(j in 1:ncol(hab.grid)){
