@@ -205,7 +205,7 @@ for(y in 1:days){
 	tryp <- infection(popn = hunger.cycle$popn, human = human.popn, OE = OE.popn, probe = hunger.cycle$probe, feed = hunger.cycle$feed,  transmission = infect, adult = row.adult)
 	cell.popn <- tryp$popn
 	human.popn <- tryp$human
-	OE$popn <- tryp$OE
+	OE.popn <- tryp$OE
 	move.fun <- HAT_move(popn = cell.popn, move = move, move.prob = move.prob, hab.grid = hab.grid)
 	move.grid.list[[y+1]] <- move.fun$move.grid
 	for(i in 1:nrow(hab.grid)){
