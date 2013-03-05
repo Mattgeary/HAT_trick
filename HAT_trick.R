@@ -89,7 +89,7 @@ rand.y <- sample(1:size, 10, replace=T)
 rand.z <- sample(8:max.age, 10, replace=T)
 rand.fly <- sample(20:200, 10, replace=T)
 for(i in 1:length(rand.x)){
-cell.popn[[rand.x[i]]][[rand.y[i]]][rand.z[i],2] <- rand.fly[i]
+cell.popn[[rand.x[i]]][[rand.y[i]]][rand.z[i],3] <- rand.fly[i]
 }
 
 

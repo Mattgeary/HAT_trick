@@ -32,7 +32,7 @@ infection <- function(popn, human, OE, probe, feed, transmission = transmission.
 		}
 
 		#### Update infected and incubating tsetse ####
-	for(i in 1:length(cell.popn)){
+	for(i in 1:length(popn)){
 		for (j in 1:length(popn[[i]])){
 			N <- popn[[i]][[j]]
 			for(p in 1:(min(adult)-1)){
@@ -46,7 +46,7 @@ infection <- function(popn, human, OE, probe, feed, transmission = transmission.
 				N[v,3] <- N[v,3] + (popn[[i]][[j]][v,2] * transmission[["mature"]]$tsetse)
 				N[v,2] <- N[v,2] - (popn[[i]][[j]][v,2] * transmission[["mature"]]$tsetse)
 			}
-			cell.popn[[i]][[j]] <- N
+			popn[[i]][[j]] <- N
 		}
 	}
 

@@ -13,7 +13,7 @@ HAT_move <- function(popn, move, move.prob, hab.grid){
 		}
 	}
 	popn.orig.un <- popn.un
-	popn.orig.inc <- popn.un
+	popn.orig.inc <- popn.inc
 	popn.orig.inf <- popn.inf
 
 ####### Uninfected #######
