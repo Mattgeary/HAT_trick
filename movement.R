@@ -343,7 +343,8 @@ HAT_move <- function(popn, move, move.prob, hab.grid){
 	}
 
 
-	return(list(new.pop = popn, movements = move, move.grid = list("uninfected"=move.grid.un, "infected"=move.grid.inf)))
+	return(list(new.pop = popn, movements = move, move.grid = list("uninfected"=move.grid.un, 
+"incubating" = move.grid.inc, "infected"=move.grid.inf)))
 }
 				
 			

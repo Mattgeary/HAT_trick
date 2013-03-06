@@ -56,7 +56,7 @@ pop.mat[1,i] <- fec
 ##########################################################################################################################
 #################################### Create habitat grid #################################################################
 size <- 10 # Number of grid cells - move to initital stages eventually 
-days <- (365) # Number of days to simulate - move to initial stages eventually
+days <- (5) # Number of days to simulate - move to initial stages eventually
 hab.grid <- matrix(1, ncol=size, nrow=size)
 
 ########### Add habitat data ###############
@@ -212,7 +212,7 @@ for(y in 1:days){
 		for(j in 1:ncol(hab.grid)){
 		cell.popn[[i]][[j]] <- move.fun$new.pop[[i]][[j]] + move.fun$movements[[i]][[j]]
 		current.grid[i,j] <- sum(cell.popn[[i]][[j]])
-		current.grid.inf[i,j] <- sum(cell.popn[[i]][[j]][,2])
+		current.grid.inf[i,j] <- sum(cell.popn[[i]][[j]][,3])
 		}
 		current.pop[[i]] <- sapply(cell.popn[[i]], sum)
 		#current.detect[[i]] <- sapply(hunger.cycle$detect[[i]], sum)
