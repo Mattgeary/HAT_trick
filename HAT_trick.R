@@ -56,7 +56,7 @@ pop.mat[1,i] <- fec
 ##########################################################################################################################
 #################################### Create habitat grid #################################################################
 size <- 10 # Number of grid cells - move to initital stages eventually 
-days <- (5) # Number of days to simulate - move to initial stages eventually
+days <- (6) # Number of days to simulate - move to initial stages eventually
 hab.grid <- matrix(1, ncol=size, nrow=size)
 
 ########### Add habitat data ###############
@@ -205,6 +205,7 @@ for(y in 1:days){
 	tryp <- infection(popn = hunger.cycle$popn, human = human.popn, OE = OE.popn, probe = hunger.cycle$probe, feed = hunger.cycle$feed,  transmission = infect, adult = row.adult)
 	cell.popn <- tryp$popn
 	human.popn <- tryp$human
+	print(human.popn[[10]])
 	OE.popn <- tryp$OE
 	move.fun <- HAT_move(popn = cell.popn, move = move, move.prob = move.prob, hab.grid = hab.grid)
 	move.grid.list[[y+1]] <- move.fun$move.grid

@@ -59,22 +59,27 @@ infection <- function(popn, human, OE, probe, feed, transmission = transmission.
 			}
 		}
 
+
+##### Number of infected humans can be greater than total number of humans - same for OE I assume. Need to check how that happens - probably calculation above. Also might be worth adding human and OE reproduction so that there is popn turnover.
+
+
+
 		#### Update infected/incubating/cured humans ####
 
 		for(i in 1:length(human)){
 			for (j in 1:length(human[[i]])){
 				N <- human[[i]][[j]]
-				for(p in 1:2){
-					N[p,1] <- N[p,1] + N[p,2] + N[p,3] + N[p,4]
-					N[p,2] <- 0
-					N[p,3] <- 0
-					N[p,4] <- 0				
-				}
+				N[1,1] <- N[1,1] + N[1,2] + N[1,3] + N[1,4] # This is wrng for humans - infected children remain infected - need to work out popn matrix 
+				N[1,2] <- 0
+				N[1,3] <- 0
+				N[1,4] <- 0
+				N[2,1] <- N[2,1] + N[2,4] # Add recovered back into popn
+				N[2,4] <- 0				
 				for(v in 1:2){
 					N[v,2] <- N[v,2] + human.infect[[i]][[j]][v]
 					N[v,1] <- N[v,1] - human.infect[[i]][[j]][v]
-					N[v,4] <- N[v,3] - (human[[i]][[j]][v,3] * transmission[["recover"]]$human)
-					N[v,4] <- N[v,4] + (human[[i]][[j]][v,4] * transmission[["recover"]]$human)
+					N[v,3] <- N[v,3] - (human[[i]][[j]][v,3] * transmission[["recover"]]$human)
+					N[v,4] <- N[v,4] + (human[[i]][[j]][v,3] * transmission[["recover"]]$human)
 					N[v,3] <- N[v,3] + (human[[i]][[j]][v,2] * transmission[["mature"]]$human)
 					N[v,2] <- N[v,2] - (human[[i]][[j]][v,2] * transmission[["mature"]]$human)
 					
@@ -97,10 +102,12 @@ infection <- function(popn, human, OE, probe, feed, transmission = transmission.
 		for(i in 1:length(OE)){
 			for (j in 1:length(OE[[i]])){
 				N <- OE[[i]][[j]]
+				N[,1] <- N[,1] + N[,4] # Add recovered back into popn
+				N[,4] <- 0
 				N[,2] <- N[,2] + OE.infect[[i]][[j]]
 				N[,1] <- N[,1] - OE.infect[[i]][[j]]
-				N[,4] <- N[,3] - (OE[[i]][[j]][,3] * transmission[["recover"]]$OE)
-				N[,4] <- N[,4] + (OE[[i]][[j]][,4] * transmission[["recover"]]$OE)
+				N[,3] <- N[,3] - (OE[[i]][[j]][,3] * transmission[["recover"]]$OE)
+				N[,4] <- N[,4] + (OE[[i]][[j]][,3] * transmission[["recover"]]$OE)
 				N[,3] <- N[,3] + (OE[[i]][[j]][,2] * transmission[["mature"]]$OE)
 				N[,2] <- N[,2] - (OE[[i]][[j]][,2] * transmission[["mature"]]$OE)
 					
