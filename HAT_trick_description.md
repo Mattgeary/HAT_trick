@@ -43,7 +43,7 @@ E.g.
 
 __ADD INFO HERE__
 
-* Habitat preferences scaled by the preffered habitat for the speciers in question
+* Habitat preferences scaled by the preferred habitat for the species in question
 
 E.g. 
 

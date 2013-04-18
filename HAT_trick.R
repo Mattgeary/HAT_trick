@@ -56,7 +56,7 @@ pop.mat[1,i] <- fec
 ##########################################################################################################################
 #################################### Create habitat grid #################################################################
 size <- 10 # Number of grid cells - move to initital stages eventually 
-days <- (6) # Number of days to simulate - move to initial stages eventually
+days <- (10) # Number of days to simulate - move to initial stages eventually
 hab.grid <- matrix(1, ncol=size, nrow=size)
 
 ########### Add habitat data ###############
@@ -193,22 +193,25 @@ move.grid.list[[1]] <- matrix(0, nrow=nrow(hab.grid), ncol=ncol(hab.grid)) ### F
 source("movement.R")
 source("feed.R")
 source("infected.R")
+source("demog.R")
 pb <- txtProgressBar(min = 0, max = days, style = 3)
 
 for(y in 1:days){
-	for(i in 1:nrow(hab.grid)){
-		for(j in 1:ncol(hab.grid)){
-			cell.popn[[i]][[j]] <-  pop.mat %*% matrix(cell.popn[[i]][[j]], ncol=3)
-		}
-	}
+	cell.popn <- demog.tsetse(cell.popn, pop.mat, hab.grid, adult=min(row.adult))
+	human.popn <- demog.human(human.popn, hab=hab.grid)
+
 	hunger.cycle <- feed_fun(habitat = hab.grid, popn = cell.popn, human = human.popn, OE = OE.popn, feed.cycle = feed.cycle, adult = col.adult)	
+
 	tryp <- infection(popn = hunger.cycle$popn, human = human.popn, OE = OE.popn, probe = hunger.cycle$probe, feed = hunger.cycle$feed,  transmission = infect, adult = row.adult)
+
 	cell.popn <- tryp$popn
 	human.popn <- tryp$human
 	print(human.popn[[10]])
 	OE.popn <- tryp$OE
+
 	move.fun <- HAT_move(popn = cell.popn, move = move, move.prob = move.prob, hab.grid = hab.grid)
 	move.grid.list[[y+1]] <- move.fun$move.grid
+	
 	for(i in 1:nrow(hab.grid)){
 		for(j in 1:ncol(hab.grid)){
 		cell.popn[[i]][[j]] <- move.fun$new.pop[[i]][[j]] + move.fun$movements[[i]][[j]]
@@ -221,6 +224,7 @@ for(y in 1:days){
 		#current.probe[[i]] <- sapply(hunger.cycle$probe[[i]], sum)
 		#current.feed[[i]] <- sapply(hunger.cycle$feed[[i]], sum)
 	}
+
 	popn.whole[,y +1] <- unlist(current.pop)
 	#detect.whole[,y] <- unlist(current.detect)	
 	#visit.whole[,y] <- unlist(current.visit)

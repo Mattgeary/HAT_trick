@@ -35,11 +35,6 @@ infection <- function(popn, human, OE, probe, feed, transmission = transmission.
 	for(i in 1:length(popn)){
 		for (j in 1:length(popn[[i]])){
 			N <- popn[[i]][[j]]
-			for(p in 1:(min(adult)-1)){
-				N[p,1] <- N[p,1] + N[p,2] + N[p,3] 
-				N[p,2] <- 0
-				N[p,3] <- 0
-			}
 			for(v in min(adult):max(adult)){
 				N[v,2] <- N[v,2] + cell.infection[[i]][[j]][v]
 				N[v,1] <- N[v,1] - cell.infection[[i]][[j]][v]
@@ -54,13 +49,15 @@ infection <- function(popn, human, OE, probe, feed, transmission = transmission.
 
 		#### Calculate number of infected humans ####
 		for(i in 1:length(human[[1]])){
-			for(j in length(human[[1]])){
-				human.infect[[i]][[j]] <- (check.infect(sum(feed[["human"]][[i]][[j]])/(sum(popn[[i]][[j]][,3]) * transmission[["feed"]]$human)) + check.infect((sum(probe[["human"]][[i]][[j]]) - sum(feed[["human"]][[i]][[j]]))/(sum(popn[[i]][[j]][,3]) * transmission[["probe"]]$human))) * human[[i]][[j]][,1]
+			for(j in 1:length(human[[1]])){
+				human.infect[[i]][[j]] <- (check.infect((1 - (1 - transmission[["feed"]]$human) ^ (sum(feed[["human"]][[i]][[j]]) * (sum(popn[[i]][[j]][,3])/sum(popn[[i]][[j]]))))) * check.infect((1 - (1 - transmission[["probe"]]$human) ^ (sum(probe[["human"]][[i]][[j]])- sum(feed[["human"]][[i]][[j]]))) * (sum(popn[[i]][[j]][,3])/sum(popn[[i]][[j]])))) * human[[i]][[j]][,1]
 			}
 		}
 
 
-##### Number of infected humans can be greater than total number of humans - same for OE I assume. Need to check how that happens - probably calculation above. Also might be worth adding human and OE reproduction so that there is popn turnover.
+##### Changed to the proabaility of NOT getting disease via feeding * probability of not getting disease by probe (i.e. independent events - DOES NOT WORK produces negative numbers and NaNs. Need to redo this part of the calculation #### 
+
+####Seems like this calculation can still produce negative numbers. Potentially because number of flies biting people * proportion of population infected can be larger than 1 so 1- this  < 1  - both probe and feed should be included inj the same probability calculation (i.e. 1 - probability of disease not being transmitted by feeding OR probe)######################
 
 
 
@@ -69,12 +66,12 @@ infection <- function(popn, human, OE, probe, feed, transmission = transmission.
 		for(i in 1:length(human)){
 			for (j in 1:length(human[[i]])){
 				N <- human[[i]][[j]]
-				N[1,1] <- N[1,1] + N[1,2] + N[1,3] + N[1,4] # This is wrng for humans - infected children remain infected - need to work out popn matrix 
-				N[1,2] <- 0
-				N[1,3] <- 0
-				N[1,4] <- 0
-				N[2,1] <- N[2,1] + N[2,4] # Add recovered back into popn
-				N[2,4] <- 0				
+#				N[1,1] <- N[1,1] + N[1,2] + N[1,3] + N[1,4] # This is wrng for humans - infected children remain infected - need to work out popn matrix 
+#				N[1,2] <- 0
+#				N[1,3] <- 0
+#				N[1,4] <- 0
+#				N[2,1] <- N[2,1] + N[2,4] # Add recovered back into popn
+#				N[2,4] <- 0				
 				for(v in 1:2){
 					N[v,2] <- N[v,2] + human.infect[[i]][[j]][v]
 					N[v,1] <- N[v,1] - human.infect[[i]][[j]][v]
@@ -93,7 +90,7 @@ infection <- function(popn, human, OE, probe, feed, transmission = transmission.
 
 		for(i in 1:length(OE[[1]])){
 			for(j in length(OE[[1]])){
-				OE.infect[[i]][[j]] <- (check.infect(sum(feed[["OE"]][[i]][[j]])/(sum(popn[[i]][[j]][,3]) * transmission[["feed"]]$OE)) + check.infect((sum(probe[["OE"]][[i]][[j]]) - sum(feed[["OE"]][[i]][[j]]))/(sum(popn[[i]][[j]][,3]) * transmission[["probe"]]$OE))) * OE.popn[[i]][[j]][,1]
+				OE.infect[[i]][[j]] <- (check.infect((1 - (1 - transmission[["feed"]]$OE) ^ (sum(feed[["OE"]][[i]][[j]]) * (sum(popn[[i]][[j]][,3])/sum(popn[[i]][[j]]))))) * check.infect((1 - (1 - transmission[["probe"]]$OE) ^ (sum(probe[["OE"]][[i]][[j]])- sum(feed[["OE"]][[i]][[j]]))) * (sum(popn[[i]][[j]][,3])/sum(popn[[i]][[j]])))) * OE[[i]][[j]][,1]
 			}
 		}
 
@@ -102,8 +99,8 @@ infection <- function(popn, human, OE, probe, feed, transmission = transmission.
 		for(i in 1:length(OE)){
 			for (j in 1:length(OE[[i]])){
 				N <- OE[[i]][[j]]
-				N[,1] <- N[,1] + N[,4] # Add recovered back into popn
-				N[,4] <- 0
+#				N[,1] <- N[,1] + N[,4] # Add recovered back into popn
+#				N[,4] <- 0
 				N[,2] <- N[,2] + OE.infect[[i]][[j]]
 				N[,1] <- N[,1] - OE.infect[[i]][[j]]
 				N[,3] <- N[,3] - (OE[[i]][[j]][,3] * transmission[["recover"]]$OE)
