@@ -55,8 +55,8 @@ pop.mat[1,i] <- fec
 #print(pop.mat)
 ##########################################################################################################################
 #################################### Create habitat grid #################################################################
-size <- 10 # Number of grid cells - move to initital stages eventually 
-days <- (10) # Number of days to simulate - move to initial stages eventually
+size <- 20 # Number of grid cells - move to initital stages eventually 
+days <- 1*(30) # Number of days to simulate - move to initial stages eventually
 hab.grid <- matrix(1, ncol=size, nrow=size)
 
 ########### Add habitat data ###############
@@ -100,7 +100,7 @@ human.popn <- list()
 for(i in 1:nrow(hab.grid)){
 	human.popn[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		human.popn[[i]][[j]] <- matrix(c(0,1,0,0,0,0,0,0), ncol=4)
+		human.popn[[i]][[j]] <- matrix(c(40,100,0,0,0,0,0,0), ncol=4)
 	}
 }
 
@@ -112,7 +112,7 @@ OE.popn <- list()
 for(i in 1:nrow(hab.grid)){
 	OE.popn[[i]] <- list()
 	for(j in 1:ncol(hab.grid)){
-		OE.popn[[i]][[j]] <- matrix(c(10,0,0,0), ncol=4)
+		OE.popn[[i]][[j]] <- matrix(c(100,0,0,0), ncol=4)
 	}
 }
 
@@ -164,6 +164,13 @@ infection.grid[[1]] <- initial.pop[,2] ### First map in infection.grid set to be
 
 current.grid <- matrix(NA, nrow=size, ncol=size) ### matrix to store the current population map during each run
 current.grid.inf <- matrix(NA, nrow=size, ncol=size) ### matrix to store the current infected population map during each run
+
+human.grid <- matrix(NA, nrow=size, ncol=size)
+human.grid.inf <- matrix(NA, nrow=size, ncol=size) 
+
+OE.grid <- matrix(NA, nrow=size, ncol=size)
+OE.grid.inf <- matrix(NA, nrow=size, ncol=size) 
+
 ##### List to store movements of flies during each run #####
 move <- list()
 for(i in 1:nrow(hab.grid)){
@@ -205,8 +212,8 @@ for(y in 1:days){
 	tryp <- infection(popn = hunger.cycle$popn, human = human.popn, OE = OE.popn, probe = hunger.cycle$probe, feed = hunger.cycle$feed,  transmission = infect, adult = row.adult)
 
 	cell.popn <- tryp$popn
+	cell.popn <- hunger.cycle$popn
 	human.popn <- tryp$human
-	print(human.popn[[10]])
 	OE.popn <- tryp$OE
 
 	move.fun <- HAT_move(popn = cell.popn, move = move, move.prob = move.prob, hab.grid = hab.grid)
@@ -216,7 +223,11 @@ for(y in 1:days){
 		for(j in 1:ncol(hab.grid)){
 		cell.popn[[i]][[j]] <- move.fun$new.pop[[i]][[j]] + move.fun$movements[[i]][[j]]
 		current.grid[i,j] <- sum(cell.popn[[i]][[j]])
-		current.grid.inf[i,j] <- sum(cell.popn[[i]][[j]][,3])
+    human.grid[i,j] <- sum(human.popn[[i]][[j]])
+    current.grid.inf[i,j] <- sum(cell.popn[[i]][[j]][,3])
+		human.grid.inf[i,j] <- sum(human.popn[[i]][[j]][,3])
+		OE.grid[i,j] <- sum(OE.popn[[i]][[j]])
+    OE.grid.inf[i,j] <- sum(OE.popn[[i]][[j]][,3])
 		}
 		current.pop[[i]] <- sapply(cell.popn[[i]], sum)
 		#current.detect[[i]] <- sapply(hunger.cycle$detect[[i]], sum)
@@ -231,8 +242,13 @@ for(y in 1:days){
 	#probe.whole[,y] <- unlist(current.probe)	
 	#feed.whole[,y] <- unlist(current.feed)		
 	pop.grid[[y+1]] <- current.grid
+  oldpar <- par(mfrow=c(2,2), mar=c(4,1,2,1))
+  image(current.grid, main="Tsetse popn")
 	infection.grid[[y+1]] <- current.grid.inf
-	#print(c("DAY => ", y))
+  image(current.grid.inf, main="Infected tsetse")
+	image(human.grid.inf, main="Infected humans")
+	image(OE.grid.inf, main="Infected Ox Equivalents")
+  par(oldpar)
 	setTxtProgressBar(pb, y)
 }
 

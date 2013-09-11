@@ -89,7 +89,7 @@ infection <- function(popn, human, OE, probe, feed, transmission = transmission.
 		#### Calculate number of infected OE ####
 
 		for(i in 1:length(OE[[1]])){
-			for(j in length(OE[[1]])){
+			for(j in 1:length(OE[[1]])){
 				OE.infect[[i]][[j]] <- (check.infect((1 - (1 - transmission[["feed"]]$OE) ^ (sum(feed[["OE"]][[i]][[j]]) * (sum(popn[[i]][[j]][,3])/sum(popn[[i]][[j]]))))) * check.infect((1 - (1 - transmission[["probe"]]$OE) ^ (sum(probe[["OE"]][[i]][[j]])- sum(feed[["OE"]][[i]][[j]]))) * (sum(popn[[i]][[j]][,3])/sum(popn[[i]][[j]])))) * OE[[i]][[j]][,1]
 			}
 		}

@@ -6,3 +6,5 @@ Agent-based modelling of disease vectors project
 Translation of HAT-trick model into python and R.
 
 Model currently exists as Excel macros.
+
+run source("HAT_trick.R") in R
