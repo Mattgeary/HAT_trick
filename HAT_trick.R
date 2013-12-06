@@ -55,7 +55,7 @@ pop.mat[1,i] <- fec
 #print(pop.mat)
 ##########################################################################################################################
 #################################### Create habitat grid #################################################################
-size <- 20 # Number of grid cells - move to initital stages eventually 
+size <- 10 # Number of grid cells - move to initital stages eventually 
 days <- 1*(30) # Number of days to simulate - move to initial stages eventually
 hab.grid <- matrix(1, ncol=size, nrow=size)
 
